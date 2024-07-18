@@ -1,0 +1,29 @@
+name: parental-control-proxy
+base: core24
+version: git
+summary: Parental Control Proxy
+description: |
+  Parental Control Proxy
+
+grade: stable
+confinement: strict
+
+apps:
+  squid:
+    command: squid
+    daemon: simple
+    plugs:
+      - network-bind
+      - network
+  squidguard:
+    command: squidguard
+    daemon: simple
+    plugs:
+      - network-bind
+      - network
+parts:
+  squid:
+    plugin: nil
+    stage-packages:
+      - squid
+      - squidguard
