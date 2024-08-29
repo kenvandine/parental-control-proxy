@@ -1,6 +1,6 @@
 name: parental-control-proxy
 base: core24
-version: git
+version: '0.1'
 summary: Parental Control Proxy
 description: |
   Parental Control Proxy
@@ -9,21 +9,31 @@ grade: stable
 confinement: strict
 
 apps:
-  squid:
-    command: squid
+  parental-controls-proxy:
+    command: usr/bin/tinyproxy -d -c $SNAP_DATA/tinyproxy.conf
     daemon: simple
     plugs:
       - network-bind
       - network
-  squidguard:
-    command: squidguard
-    daemon: simple
-    plugs:
-      - network-bind
-      - network
+
 parts:
-  squid:
+  parental-controls-proxy:
     plugin: nil
     stage-packages:
-      - squid
-      - squidguard
+      - tinyproxy
+    prime:
+      - -README.md
+      - -etc/cron*
+      - -etc/default*
+      - -etc/init*
+      - -etc/log*
+      - -etc/pam*
+      - -lib
+      - -usr/lib/tmpfiles.d
+      - -usr/sbin/c*
+      - -usr/sbin/l*
+      - -usr/share/bug
+      - -usr/share/doc/c*
+      - -usr/share/doc/l*
+      - -usr/share/man
+      - -var
