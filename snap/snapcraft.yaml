@@ -8,6 +8,12 @@ description: |
 grade: stable
 confinement: strict
 
+layout:
+  /usr/share/e2guardian:
+    bind: $SNAP/usr/share/e2guardian
+  /etc/e2guardian/e2guardian.conf:
+    symlink: $SNAP/etc/e2guardian/e2guardian.conf
+
 apps:
   parental-controls-proxy:
     command: usr/bin/tinyproxy -d -c $SNAP_DATA/tinyproxy.conf
@@ -15,12 +21,30 @@ apps:
     plugs:
       - network-bind
       - network
+  enforcer:
+    command: enforcer
+    daemon: simple
+    timer: 00:00-24:00/1440
+    plugs:
+      - network-manager
 
 parts:
+  enforcer:
+    plugin: dump
+    source: enforcer
+    stage-packages:
+      - network-manager
+
   parental-controls-proxy:
     plugin: nil
     stage-packages:
       - tinyproxy
+      - e2guardian
+    override-stage: |
+      craftctl default
+      sed -i 's|^filterip =|filterip = 127.0.0.1|g' $CRAFT_STAGE/etc/e2guardian/e2guardian.conf
+      sed -i 's|^#proxyip =|proxyip =|g' $CRAFT_STAGE/etc/e2guardian/e2guardian.conf
+      sed -i 's|^#proxyport =|proxyport =|g' $CRAFT_STAGE/etc/e2guardian/e2guardian.conf
     prime:
       - -README.md
       - -etc/cron*
